@@ -142,7 +142,7 @@
       fileNamePreview.animate([{opacity:0.4},{opacity:1}], {duration:320, easing:'ease-out'});
     } else {
       fileNamePreview.textContent = '選択されていません';
-      nameInput.placeholder = '例：ジャンプ';
+      nameInput.placeholder = 'ファイル名を入力';
     }
   });
 
