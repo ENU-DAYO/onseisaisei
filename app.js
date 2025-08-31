@@ -320,13 +320,9 @@
       });
 
       // 削除
-      node.querySelector('.delete').addEventListener('click', async () => {
-        if (!confirm('削除してよろしいですか？')) return;
-        await deleteSound(s.id);
-        sounds = sounds.filter(x => x.id !== s.id);
-        rebuildKeyMap();
-        renderList();
-      });
+node.querySelector('.delete').addEventListener('click', async () => {
+  openDeleteModal(s);
+});
 
       list.appendChild(node);
     }
@@ -485,8 +481,58 @@ exportBtn.addEventListener('click', async () => {
     alert('データベースの初期化に失敗しました。ページを再読み込みしてください。');
   });
 
-  // 既存の IDB 操作を使うためのラッパ（ここは上のヘルパ利用）
-  // （再掲：addSound/updateSound/deleteSound/getAllSounds）
+// モーダル参照（既存の renameModal と並べて）
+const deleteModal = document.getElementById('deleteModal');
+const deleteConfirm = document.getElementById('deleteConfirm');
+const deleteCancel = document.getElementById('deleteCancel');
+const deleteTargetName = document.getElementById('deleteTargetName');
 
-  // 追加で、カード描画後にも参照できるように helper をエクスポートせずに実装完了しました。
+let pendingDeleteTarget = null;
+
+function openDeleteModal(soundObj) {
+  pendingDeleteTarget = soundObj;
+  deleteTargetName.textContent = soundObj.name || '(無名)';
+  deleteModal.setAttribute('aria-hidden', 'false');
+  // フォーカス移動（アクセシビリティ）
+  setTimeout(() => deleteConfirm.focus(), 120);
+}
+
+function closeDeleteModal() {
+  pendingDeleteTarget = null;
+  deleteModal.setAttribute('aria-hidden', 'true');
+}
+
+// モーダルのキャンセル
+deleteCancel.addEventListener('click', () => {
+  closeDeleteModal();
+});
+
+// バックドロップクリックで閉じる
+deleteModal.querySelector('[data-dismiss="modal"]').addEventListener('click', () => {
+  closeDeleteModal();
+});
+
+// 確定（削除）
+deleteConfirm.addEventListener('click', async () => {
+  if (!pendingDeleteTarget) { closeDeleteModal(); return; }
+  try {
+    await deleteSound(pendingDeleteTarget.id);
+    sounds = sounds.filter(x => x.id !== pendingDeleteTarget.id);
+    rebuildKeyMap();
+    renderList();
+  } catch (err) {
+    console.error(err);
+    alert('削除に失敗しました');
+  }
+  closeDeleteModal();
+});
+
+// Esc でキャンセルできるように（任意）
+deleteModal.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    e.preventDefault();
+    closeDeleteModal();
+  }
+});
+
 })();
