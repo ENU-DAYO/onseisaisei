@@ -22,12 +22,12 @@
 
       <form id="addForm" class="form" autocomplete="off">
         <label class="field field--name">
-          <span class="field__label">表示名</span>
+          <span class="field__label">表示名（未入力ならファイル名がプレースホルダー）</span>
           <input id="nameInput" class="input" type="text" placeholder="ファイル名を入力" />
         </label>
 
         <label class="field field--key">
-          <span class="field__label">再生キー</span>
+          <span class="field__label">再生キー（クリックして設定）</span>
           <button id="keyCaptureBtn" type="button" class="key-btn" aria-label="キー設定">未設定</button>
           <input id="keyValue" type="hidden" />
         </label>
@@ -110,7 +110,20 @@
     </div>
   </div>
 
+<!-- 削除確認モーダル -->
+<div id="deleteModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="modal__backdrop" data-dismiss="modal"></div>
+  <div class="modal__panel" role="document" aria-labelledby="deleteModalTitle">
+    <h3 id="deleteModalTitle">効果音を削除しますか？</h3>
+    <p class="modal__desc">この操作は元に戻せません。よろしいですか？</p>
+    <p id="deleteTargetName" class="modal__desc" style="font-weight:600; margin-top:6px;"></p>
+    <div class="modal__actions">
+      <button id="deleteCancel" class="btn btn--ghost">キャンセル</button>
+      <button id="deleteConfirm" class="btn btn--danger">削除する</button>
+    </div>
+  </div>
+</div>
+
   <script src="./app.js" defer></script>
 </body>
 </html>
-
