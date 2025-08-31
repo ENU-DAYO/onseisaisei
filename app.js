@@ -197,7 +197,7 @@
     keyBtn.textContent = '未設定';
     keyValue.value = '';
     fileNamePreview.textContent = '選択されていません';
-    nameInput.placeholder = '例：ジャンプ';
+    nameInput.placeholder = 'ファイル名を入力';
   });
 
   // -------- 追加処理 --------
