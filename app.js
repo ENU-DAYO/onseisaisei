@@ -344,28 +344,33 @@
   }
 
   // -------- エクスポート / インポート --------
-  exportBtn.addEventListener('click', async () => {
-    const all = await getAllSounds();
-    const serializable = await Promise.all(all.map(async s => ({
-      id: s.id,
-      name: s.name,
-      key: s.key,
-      createdAt: s.createdAt,
-      duration: s.duration ?? null,
-      blobType: s.blob.type,
-      blobB64: await blobToBase64(s.blob)
-    })));
+exportBtn.addEventListener('click', async () => {
+  const all = await getAllSounds();
+  const serializable = await Promise.all(all.map(async s => ({
+    id: s.id,
+    name: s.name,
+    key: s.key,
+    createdAt: s.createdAt,
+    duration: s.duration ?? null,
+    blobType: s.blob.type,
+    blobB64: await blobToBase64(s.blob)
+  })));
 
-    const json = JSON.stringify({ version: 1, items: serializable }, null, 2);
-    const file = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(file);
+  const json = JSON.stringify({ version: 1, items: serializable }, null, 2);
+  const file = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(file);
 
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'soundpad_export.json';
-    a.click();
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'soundpad_export.json';
+  document.body.appendChild(a);
+  a.click();
+  // 少し遅らせて revoke & remove（安全対策）
+  setTimeout(() => {
     URL.revokeObjectURL(url);
-  });
+    a.remove();
+  }, 500);
+});
 
   importInput.addEventListener('change', async () => {
     const f = importInput.files && importInput.files[0];
@@ -485,12 +490,3 @@
 
   // 追加で、カード描画後にも参照できるように helper をエクスポートせずに実装完了しました。
 })();
-
-//cloudflareのデプロイ用
-import { WorkerEntrypoint } from "cloudflare:workers";
-
-export default class extends WorkerEntrypoint {
-  async fetch(request) {
-    return new Response("Hello, world!");
-  }
-}
